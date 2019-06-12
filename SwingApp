@@ -1,0 +1,225 @@
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+public class SwingApp extends JFrame {
+    Color colorTemp;
+    Container pane = new Container ();
+
+    public SwingApp() {
+        //ICON FÜR FRAME WIRD GESETZT
+        ImageIcon imageIcon = new ImageIcon ( "itlogo.png" );
+        setIconImage ( imageIcon.getImage () );
+
+        //FRAME WIRD EERZEUGT
+        setTitle ( "PRISMA Scroll <<SWING>>" );
+        setSize ( 300, 200 );
+        setLocationRelativeTo ( null );
+        setDefaultCloseOperation ( WindowConstants.EXIT_ON_CLOSE );
+
+        pane.setLayout ( new FlowLayout ( FlowLayout.CENTER ) );
+
+        createMenuBar ();
+        createButton ();
+        createScrollPane ();
+
+        pack ();
+    }
+
+    public static void main(String[] args) {
+        EventQueue.invokeLater ( new Runnable () {
+            @Override
+            public void run() {
+                SwingApp swingApp = new SwingApp ();
+                swingApp.setVisible ( true );
+            }
+        } );
+    }
+
+    private void createMenuBar() {
+        //ERSTELLT EINE MENÜLEISTE
+        JMenuBar menuBar = new JMenuBar ();
+
+        //OPTONEN DER LEISTE WERDEN DEFINIERT
+        JMenu datei = new JMenu ( "Datei" );
+        JMenu hilfe = new JMenu ( "Hilfe" );
+        JMenu info = new JMenu ( "Info" );
+
+        datei.setMnemonic ( KeyEvent.VK_D );
+        info.setMnemonic ( KeyEvent.VK_F );
+        hilfe.setMnemonic ( KeyEvent.VK_H );
+
+        //ITEMS DER EINZELNEN MENÜS WERDEN DEFINIERT
+        JMenuItem schliessen = new JMenuItem ( "Schliessen" );
+        JMenuItem speichern = new JMenuItem ( "Speichern" );
+        JMenuItem ueberUns = new JMenuItem ( "Ueber uns!" );
+        JMenu test = new JMenu ( "Test" );
+
+
+        JMenuItem impressum = new JMenuItem ( "Impressum" );
+
+        //VERHALTEN DER MENÜ OPTIONEN
+        speichern.addActionListener ( e -> {
+            System.out.println ( "Einstellung gespeichert!" );
+            try {
+                Thread.sleep ( 1750 );
+            } catch (InterruptedException e1) {
+                e1.printStackTrace ();
+            }
+            System.out.println ();
+            System.out.println ( "Programm wird beendet" );
+            try {
+                Thread.sleep ( 750 );
+            } catch (InterruptedException e1) {
+                e1.printStackTrace ();
+            }
+            System.exit ( 0 );
+        } );
+
+        schliessen.addActionListener ( e -> {
+            System.exit ( 0 );
+        } );
+
+        ueberUns.addActionListener ( e -> {
+            try {
+                Runtime.getRuntime ().exec ( new String[]{"cmd", "/c", "start chrome https://www.itavero.de"} );
+            } catch (IOException ex) {
+                ex.printStackTrace ();
+            }
+        } );
+
+        impressum.addActionListener ( new ActionListener () {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                long time = System.currentTimeMillis ();
+                SimpleDateFormat format = new SimpleDateFormat ( "dd.MM.yyyy, hh:mm" );
+                Date date = new Date ( time );
+
+                JOptionPane.showMessageDialog ( getContentPane (),
+                        "Hassia Group Bad Vilbel" + System.lineSeparator () + format.format ( date ), "Impressung",
+                        JOptionPane.INFORMATION_MESSAGE );
+            }
+        } );
+
+
+        //MENÜITEMS WERDEN MENUBAR ZUGEORDNET UND DIE ANZEIGE DES MENUBARS IM PROGRAMM
+        test.add ( impressum );
+
+        datei.add ( speichern );
+        datei.addSeparator ();
+        datei.add ( schliessen );
+
+        info.add ( test );
+        test.add ( impressum );
+
+        hilfe.add ( ueberUns );
+
+        menuBar.add ( datei );
+        menuBar.add ( info );
+        menuBar.add ( Box.createHorizontalGlue () );
+        menuBar.add ( hilfe );
+
+        setJMenuBar ( menuBar );
+    }
+
+    private void createButton() {
+
+        //BUTTONS WERDEN INSTANZIIERT
+        JButton schliessen = new JButton ( "Schliessen" );
+        JButton print = new JButton ( "Print" );
+        JButton color = new JButton ( "Farbe" );
+        JButton fileChoose = new JButton ( "Oeffnen" );
+
+        schliessen.setToolTipText ( "Schliesst das Programm." );
+
+        pane.add ( schliessen );
+        pane.add ( print );
+        pane.add ( color );
+        pane.add ( fileChoose );
+
+        //MNEMONICS SHORTCUTS FÜR BUTTONS ODER MENÜITEMS
+        schliessen.setMnemonic ( KeyEvent.VK_S );
+        print.setMnemonic ( KeyEvent.VK_P );
+        color.setMnemonic ( KeyEvent.VK_C );
+        fileChoose.setMnemonic ( KeyEvent.VK_O );
+
+        //FLOW LAYOUTS
+        pane = getContentPane ();
+        pane.setLayout ( new FlowLayout () );
+        pane.add ( schliessen );
+        pane.add ( print );
+        pane.add ( color );
+        pane.add ( fileChoose );
+
+        //VERHALTEN DER BUTTON (VIA ACTIONLISTENER)
+        schliessen.addActionListener ( new ActionListener () {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit ( 0 );
+            }
+        } );
+
+        print.addActionListener ( new ActionListener () {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println ( "Button Funktioniert!" );
+                System.out.println ( "Farbe " + colorTemp + " wurde  ausgewaehlt!" );
+                System.lineSeparator ();
+            }
+        } );
+
+        color.addActionListener ( new ActionListener () {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JColorChooser choose = new JColorChooser ();
+                Color color = choose.showDialog ( getContentPane (), "Such eine Farbe aus!", Color.black );
+                colorTemp = color;
+                getContentPane ().setBackground ( color );
+            }
+        } );
+
+        fileChoose.addActionListener ( new ActionListener () {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser jFileChooser = new JFileChooser ();
+                int dialog = jFileChooser.showDialog ( getContentPane (), "Datei öffnen" );
+
+                if (dialog == JFileChooser.APPROVE_OPTION) {
+                    File file = jFileChooser.getSelectedFile ();
+
+                }
+            }
+        } );
+    }
+
+    private void createScrollPane() {
+        DefaultTableModel model = new DefaultTableModel ();
+        JTable table = new JTable ( model );
+        JScrollPane scrollPane = new JScrollPane ( table );
+
+        scrollPane.setVerticalScrollBarPolicy ( JScrollPane.VERTICAL_SCROLLBAR_ALWAYS );
+
+        model.addColumn ( "Spalte 1" );
+        model.addColumn ( "Spalte 2" );
+
+        for (int i = 0; i < 200; i++) {
+            model.insertRow ( i, new Object[]{"Reihe " + (i + 1), "Info " + (i + 1)} );
+        }
+
+        table.setEnabled ( false );
+        table.setAutoCreateRowSorter ( true );
+
+        //On mouse click copy text within table! Research
+
+
+        getContentPane ().add ( scrollPane );
+    }
+}
